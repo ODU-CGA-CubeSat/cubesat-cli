@@ -27,16 +27,19 @@ if __name__ == "__main__":
     parser_component = subparsers.add_parser(
         "component", help="Subcommand for Component data"
     )
+    parser_component.add_argument("validate", type=str, help="Validate that a Component directory contains a valid package.json")
 
     parser_componentlist = subparsers.add_parser(
         "componentlist",
         help="Subcommand for ComponentList data (i.e., parts.yaml or tools.yaml)",
     )
+    parser_componentlist.add_argument("validate", type=str, help="Validate that a ComponentList (i.e., parts.yaml or tools.yaml) contains a valid list of ComponentListItem items")
 
     parser_activitysteps = subparsers.add_parser(
         "activitysteps",
         help="Subcommand for ActivitySteps (i.e., assemblySteps or operatingSteps) data",
     )
+    parser_activitysteps.add_argument("validate", type=str, help="Validate that an ActivitySteps (i.e., assemblySteps.yaml) contains a valid list of assemblyStep items")
 
     # Print help text if no arguments passed
     if len(sys.argv) == 1:
