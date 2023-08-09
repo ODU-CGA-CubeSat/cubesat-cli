@@ -51,3 +51,9 @@ if __name__ == "__main__":
 
     # Setup sealion-cli instance
     cubesat_cli = CubeSatDB()
+
+    # componentlist
+    if args.command == "componentlist":
+        if len(sys.argv) == 2:
+            parser_componentlist.print_help(sys.stderr)
+            sys.exit(1)
