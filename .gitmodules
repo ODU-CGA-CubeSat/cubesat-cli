@@ -1,0 +1,3 @@
+[submodule "dof-cubesat"]
+	path = dof-cubesat
+	url = https://github.com/ODU-CGA-CubeSat/dof-cubesat.git
