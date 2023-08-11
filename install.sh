@@ -22,7 +22,7 @@ cp -r ./* $HOME/.cubesat-cli
 
 # Create symlink for cubesat-cli, if none exists
 if [ ! -r $HOME/.cubesat-cli/bin/cubesat-cli ]; then
-    ln -sv $HOME/.cubesat-cli/cubesat-cli.py $HOME/.cubesat-cli/bin/cubesat-cli
+    ln -sv $HOME/.cubesat-cli/cubesat_cli.py $HOME/.cubesat-cli/bin/cubesat-cli
 fi
 
 # Add $HOME/.cubesat-cli to PATH in ~/.bashrc
