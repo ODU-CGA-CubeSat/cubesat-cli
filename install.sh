@@ -1,5 +1,12 @@
 #!/usr/bin/bash
 
+# Build dof-cubesat schema
+if [ ! -r ./dof-cubesat/dist/dof.yaml ]; then
+    cd dof-cubesat
+    ./buildUnifiedSchema.sh
+    cd ..
+fi
+
 # Create $HOME/.cubesat-cli folder, if none exists
 if [ ! -r $HOME/.cubesat-cli ]; then
     mkdir $HOME/.cubesat-cli

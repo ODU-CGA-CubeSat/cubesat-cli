@@ -6,13 +6,17 @@ import sys
 import requests
 import toml
 import traceback
+from os import path
+from subprocess import run
 
 
 class CubeSatDB:
     """class used for validation and CRUD operations using the dof-cubesat schema"""
 
     def __init__(self):
-        pass
+        fullpath = path.dirname(path.abspath(__file__))
+        self.dof_cubesat_path = path.join(fullpath, "../dof-cubesat")
+        self.dof_cubesat_schema_path = path.join(self.dof_cubesat_path, "dist/dof.yaml")
 
 
 if __name__ == "__main__":
@@ -41,16 +45,16 @@ if __name__ == "__main__":
     )
     parser_activitysteps.add_argument("validate", type=str, help="Validate that an ActivitySteps (i.e., assemblySteps.yaml) contains a valid list of assemblyStep items")
 
-    # Print help text if no arguments passed
-    if len(sys.argv) == 1:
-        parser.print_help(sys.stderr)
-        sys.exit(1)
-
     # Parse arguments
     args = parser.parse_args()
 
     # Setup sealion-cli instance
     cubesat_cli = CubeSatDB()
+
+    # Print help text if no arguments passed
+    if len(sys.argv) == 1:
+        parser.print_help(sys.stderr)
+        sys.exit(1)
 
     # componentlist
     if args.command == "componentlist":
