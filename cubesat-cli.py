@@ -6,7 +6,9 @@ import sys
 import requests
 import toml
 import traceback
+import yaml
 from os import path
+from os import readlink
 from subprocess import run
 
 
@@ -14,9 +16,18 @@ class CubeSatDB:
     """class used for validation and CRUD operations using the dof-cubesat schema"""
 
     def __init__(self):
-        fullpath = path.dirname(path.abspath(__file__))
-        self.dof_cubesat_path = path.join(fullpath, "../dof-cubesat")
+        self.filepath = path.abspath(__file__)
+        if path.islink(self.filepath):
+            self.filepath = readlink(self.filepath)
+        self.fullpath = path.dirname(self.filepath)
+        self.dof_cubesat_path = path.join(self.fullpath, "dof-cubesat")
         self.dof_cubesat_schema_path = path.join(self.dof_cubesat_path, "dist/dof.yaml")
+
+        with open(self.dof_cubesat_schema_path, "r") as file:
+            self.dof_cubesat_schema_as_str = file.read()
+            self.dof_cubesat_schema_as_dict = yaml.safe_load(
+                self.dof_cubesat_schema_as_str
+            )
 
 
 if __name__ == "__main__":
@@ -31,19 +42,31 @@ if __name__ == "__main__":
     parser_component = subparsers.add_parser(
         "component", help="Subcommand for Component data"
     )
-    parser_component.add_argument("validate", type=str, help="Validate that a Component directory contains a valid package.json")
+    parser_component.add_argument(
+        "validate",
+        type=str,
+        help="Validate that a Component directory contains a valid package.json",
+    )
 
     parser_componentlist = subparsers.add_parser(
         "componentlist",
         help="Subcommand for ComponentList data (i.e., parts.yaml or tools.yaml)",
     )
-    parser_componentlist.add_argument("validate", type=str, help="Validate that a ComponentList (i.e., parts.yaml or tools.yaml) contains a valid list of ComponentListItem items")
+    parser_componentlist.add_argument(
+        "validate",
+        type=str,
+        help="Validate that a ComponentList (i.e., parts.yaml or tools.yaml) contains a valid list of ComponentListItem items",
+    )
 
     parser_activitysteps = subparsers.add_parser(
         "activitysteps",
         help="Subcommand for ActivitySteps (i.e., assemblySteps or operatingSteps) data",
     )
-    parser_activitysteps.add_argument("validate", type=str, help="Validate that an ActivitySteps (i.e., assemblySteps.yaml) contains a valid list of assemblyStep items")
+    parser_activitysteps.add_argument(
+        "validate",
+        type=str,
+        help="Validate that an ActivitySteps (i.e., assemblySteps.yaml) contains a valid list of assemblyStep items",
+    )
 
     # Parse arguments
     args = parser.parse_args()
