@@ -29,58 +29,42 @@ class CubeSatDB:
                 self.dof_cubesat_schema_as_str
             )
 
+    def setup_cli(self):
+        # Setup parser
+        self.parser = argparse.ArgumentParser(
+            description="CLI tool for performing CRUD operations on bill of materials (BOM) data & assembly instructions data, using the dof-cubesat schema."
+        )
+
+        # Setup subparser for subcommands
+        self.subparser = self.parser.add_subparsers(dest="command")
+        self.parsers = {}
+
+        # Iterate through classes specified in schema and create parsers for each class that is a root class
+        for class_name in self.dof_cubesat_schema_as_dict["classes"]:
+            if (
+                "tree_root"
+                in self.dof_cubesat_schema_as_dict["classes"][class_name].keys()
+            ):
+                self.parsers[class_name] = self.subparser.add_parser(
+                    class_name.lower(),
+                    help="Subcommand for {0} data".format(class_name),
+                )
+                self.parsers[class_name].add_argument(
+                    "validate",
+                    help="Validate a {0}".format(class_name),
+                )
+
 
 if __name__ == "__main__":
-    # Setup parser
-    parser = argparse.ArgumentParser(
-        description="CLI tool for performing CRUD operations on bill of materials (BOM) data & assembly instructions data, using the dof-cubesat schema."
-    )
 
-    # Setup subparser for subcommands
-    subparsers = parser.add_subparsers(dest="command")
-
-    parser_component = subparsers.add_parser(
-        "component", help="Subcommand for Component data"
-    )
-    parser_component.add_argument(
-        "validate",
-        type=str,
-        help="Validate that a Component directory contains a valid package.json",
-    )
-
-    parser_componentlist = subparsers.add_parser(
-        "componentlist",
-        help="Subcommand for ComponentList data (i.e., parts.yaml or tools.yaml)",
-    )
-    parser_componentlist.add_argument(
-        "validate",
-        type=str,
-        help="Validate that a ComponentList (i.e., parts.yaml or tools.yaml) contains a valid list of ComponentListItem items",
-    )
-
-    parser_activitysteps = subparsers.add_parser(
-        "activitysteps",
-        help="Subcommand for ActivitySteps (i.e., assemblySteps or operatingSteps) data",
-    )
-    parser_activitysteps.add_argument(
-        "validate",
-        type=str,
-        help="Validate that an ActivitySteps (i.e., assemblySteps.yaml) contains a valid list of assemblyStep items",
-    )
+    # Setup cubesat database instance
+    cubesat_db = CubeSatDB()
+    cubesat_db.setup_cli()
 
     # Parse arguments
-    args = parser.parse_args()
-
-    # Setup sealion-cli instance
-    cubesat_cli = CubeSatDB()
+    args = cubesat_db.parser.parse_args()
 
     # Print help text if no arguments passed
     if len(sys.argv) == 1:
-        parser.print_help(sys.stderr)
+        cubesat_db.parser.print_help(sys.stderr)
         sys.exit(1)
-
-    # componentlist
-    if args.command == "componentlist":
-        if len(sys.argv) == 2:
-            parser_componentlist.print_help(sys.stderr)
-            sys.exit(1)
