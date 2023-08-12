@@ -47,6 +47,9 @@ class CubeSatDB:
             ):
                 self.parsers[class_name] = self.subparser.add_parser(
                     class_name.lower(),
+                    description=self.dof_cubesat_schema_as_dict["classes"][class_name][
+                        "description"
+                    ],
                     help="Subcommand for {0} data".format(class_name),
                 )
                 self.parsers[class_name].add_argument(
