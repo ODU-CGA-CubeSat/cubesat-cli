@@ -53,15 +53,27 @@ class CubeSatDB:
                     help="Subcommand for {0} data".format(class_name),
                 )
                 self.parsers[class_name].add_argument(
-                    "validate",
+                    "-v",
+                    "--validate",
                     help="Validate a {0}".format(class_name),
+                    action="store_true",
                 )
                 self.parsers[class_name].add_argument(
                     "-f",
                     "--filename",
+                    type=str,
+                    nargs=1,
                     required=True,
                     help="Filename of {0}".format(class_name),
                 )
+
+        self.parser.add_argument(
+            "-d",
+            "--debug",
+            help="Enables debug-mode; prints parsed arguments",
+            action="store_true",
+        )
+
         # Parse arguments
         args = self.parser.parse_args()
 
@@ -69,6 +81,50 @@ class CubeSatDB:
         if len(sys.argv) == 1:
             self.parser.print_help(sys.stderr)
             sys.exit(1)
+
+        if args.debug == True:
+            print(args)
+
+        if args.validate == True:
+            if args.command == "componentdict":
+                with open(args.filename[0], "r") as file:
+                    componentdict_as_str = file.read()
+                componentdict_as_dict = yaml.safe_load(componentdict_as_str)
+                for componentdictitem_key in componentdict_as_dict.keys():
+                    self.validate(
+                        componentdict_as_dict[componentdictitem_key],
+                        target_class="ComponentDictItem",
+                    )
+
+    def validate(
+        self,
+        data: str,
+        target_class: str = None,
+        schema_path: str = None,
+    ):
+        """python wrapper for linkml-validate"""
+
+        # set schema path to dof_cubesat_schema_path, if none specified
+        if schema_path == None:
+            schema_path = self.dof_cubesat_schema_path
+
+        # create a temporary path for a data.yaml file
+        self.data_path = path.join(self.fullpath, "data.yaml")
+
+        # write YAML data to disk
+        with open(self.data_path, "w") as file:
+            file.write(yaml.dump(data))
+
+        run(
+            [
+                "linkml-validate",
+                "-s",
+                schema_path,
+                "-C",
+                target_class,
+                self.data_path,
+            ]
+        )
 
 
 if __name__ == "__main__":
