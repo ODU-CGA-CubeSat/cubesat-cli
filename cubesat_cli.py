@@ -56,10 +56,15 @@ class CubeSatDB:
                     "validate",
                     help="Validate a {0}".format(class_name),
                 )
+                self.parsers[class_name].add_argument(
+                    "-f",
+                    "--filename",
+                    required=True,
+                    help="Filename of {0}".format(class_name),
+                )
 
 
 if __name__ == "__main__":
-
     # Setup cubesat database instance
     cubesat_db = CubeSatDB()
     cubesat_db.setup_cli()
