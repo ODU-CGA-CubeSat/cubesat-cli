@@ -62,17 +62,16 @@ class CubeSatDB:
                     required=True,
                     help="Filename of {0}".format(class_name),
                 )
+        # Parse arguments
+        args = self.parser.parse_args()
+
+        # Print help text if no arguments passed
+        if len(sys.argv) == 1:
+            self.parser.print_help(sys.stderr)
+            sys.exit(1)
 
 
 if __name__ == "__main__":
     # Setup cubesat database instance
     cubesat_db = CubeSatDB()
     cubesat_db.setup_cli()
-
-    # Parse arguments
-    args = cubesat_db.parser.parse_args()
-
-    # Print help text if no arguments passed
-    if len(sys.argv) == 1:
-        cubesat_db.parser.print_help(sys.stderr)
-        sys.exit(1)
