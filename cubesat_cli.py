@@ -4,7 +4,6 @@ import argparse
 import json
 import sys
 import requests
-import toml
 import traceback
 import yaml
 from os import path
