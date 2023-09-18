@@ -26,5 +26,8 @@ if [ ! -r $HOME/.cubesat-cli/bin/cubesat-cli ]; then
 fi
 
 # Add $HOME/.cubesat-cli to PATH in ~/.bashrc
-printf '\n# cubesat-cli\nexport PATH="$PATH:$HOME/.cubesat-cli/bin"' >> ~/.bashrc
+condition="echo $PATH | grep 'cubesat-cli'"
+if ! eval $condition; then
+    printf '\n# cubesat-cli\nexport PATH="$PATH:$HOME/.cubesat-cli/bin"' >> ~/.bashrc
+fi
 source ~/.bashrc
