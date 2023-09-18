@@ -3,7 +3,7 @@
 # Build dof-cubesat schema
 if [ ! -r ./dof-cubesat/dist/dof.yaml ]; then
     cd dof-cubesat
-    ./buildUnifiedSchema.sh
+    ./gradlew build
     cd ..
 fi
 

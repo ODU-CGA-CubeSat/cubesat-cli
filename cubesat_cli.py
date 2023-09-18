@@ -20,7 +20,7 @@ class CubeSatDB:
             self.filepath = readlink(self.filepath)
         self.fullpath = path.dirname(self.filepath)
         self.dof_cubesat_path = path.join(self.fullpath, "dof-cubesat")
-        self.dof_cubesat_schema_path = path.join(self.dof_cubesat_path, "dist/dof.yaml")
+        self.dof_cubesat_schema_path = path.join(self.dof_cubesat_path, "build/schema/dof-cubesat.yaml")
 
         with open(self.dof_cubesat_schema_path, "r") as file:
             self.dof_cubesat_schema_as_str = file.read()
