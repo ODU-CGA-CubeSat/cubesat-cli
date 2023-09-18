@@ -1,7 +1,7 @@
 #!/usr/bin/bash
 
 # Build dof-cubesat schema
-if [ ! -r ./dof-cubesat/dist/dof.yaml ]; then
+if [ ! -r ./dof-cubesat/build/schema/dof-cubesat.yaml ]; then
     cd dof-cubesat
     ./gradlew build
     cd ..
