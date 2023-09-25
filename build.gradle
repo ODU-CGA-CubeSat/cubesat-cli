@@ -4,3 +4,41 @@
  * This is a general purpose Gradle build.
  * Learn more about Gradle by exploring our samples at https://docs.gradle.org/8.1.1/samples
  */
+
+plugins {
+    id 'base'
+}
+
+def homePath = System.properties['user.home']
+def src = "$projectDir"
+def schemaDir = "$projectDir/dof-cubesat"
+def schemaBuildDir = "$schemaDir/build"
+def installDir = "$homePath/.cubesat-cli"
+def binDir = "$installDir/bin"
+
+tasks.register('hello') {
+    println "$projectDir"
+    println "$installDir"
+    println "$binDir"
+}
+
+tasks.register('buildSchema', Exec) {
+    commandLine "bash", "-c", "cd $schemaDir && ./gradlew build"
+}
+
+tasks.register('copyFilesToInstallDir', Copy) {
+    dependsOn(buildSchema)
+    from "$src"
+    into "$installDir"
+}
+
+tasks.register('createSymlinkToBin', Exec) {
+    dependsOn(copyFilesToInstallDir)
+    outputs.dir(layout.buildDirectory.dir("$binDir"))
+        .withPropertyName('outputDir')
+    commandLine "ln", "$installDir/cubesat_cli.py", "-sv", "$binDir/cubesat-cli"
+}
+
+tasks.register("install") {
+    dependsOn(createSymlinkToBin)
+}
