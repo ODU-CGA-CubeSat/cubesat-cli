@@ -20,7 +20,9 @@ class CubeSatDB:
             self.filepath = readlink(self.filepath)
         self.fullpath = path.dirname(self.filepath)
         self.dof_cubesat_path = path.join(self.fullpath, "dof-cubesat")
-        self.dof_cubesat_schema_path = path.join(self.dof_cubesat_path, "build/schema/dof-cubesat.yaml")
+        self.dof_cubesat_schema_path = path.join(
+            self.dof_cubesat_path, "build/schema/dof-cubesat.yaml"
+        )
 
         with open(self.dof_cubesat_schema_path, "r") as file:
             self.dof_cubesat_schema_as_str = file.read()
@@ -40,31 +42,27 @@ class CubeSatDB:
 
         # Iterate through classes specified in schema and create parsers for each class that is a root class
         for class_name in self.dof_cubesat_schema_as_dict["classes"]:
-            if (
-                "tree_root"
-                in self.dof_cubesat_schema_as_dict["classes"][class_name].keys()
-            ):
-                self.parsers[class_name] = self.subparser.add_parser(
-                    class_name.lower(),
-                    description=self.dof_cubesat_schema_as_dict["classes"][class_name][
-                        "description"
-                    ],
-                    help="Subcommand for {0} data".format(class_name),
-                )
-                self.parsers[class_name].add_argument(
-                    "-v",
-                    "--validate",
-                    help="Validate a {0}".format(class_name),
-                    action="store_true",
-                )
-                self.parsers[class_name].add_argument(
-                    "-f",
-                    "--filename",
-                    type=str,
-                    nargs=1,
-                    required=True,
-                    help="Filename of {0}".format(class_name),
-                )
+            self.parsers[class_name] = self.subparser.add_parser(
+                class_name.lower(),
+                description=self.dof_cubesat_schema_as_dict["classes"][class_name][
+                    "description"
+                ],
+                help="Subcommand for {0} data".format(class_name),
+            )
+            self.parsers[class_name].add_argument(
+                "-v",
+                "--validate",
+                help="Validate a {0}".format(class_name),
+                action="store_true",
+            )
+            self.parsers[class_name].add_argument(
+                "-f",
+                "--filename",
+                type=str,
+                nargs=1,
+                required=True,
+                help="Filename of {0}".format(class_name),
+            )
 
         self.parser.add_argument(
             "-d",
@@ -93,6 +91,15 @@ class CubeSatDB:
                     self.validate(
                         componentdict_as_dict[componentdictitem_key],
                         target_class="ComponentDictItem",
+                    )
+            if args.command == "assemblysteps":
+                with open(args.filename[0], "r") as file:
+                    activitysteps_as_str = file.read()
+                activitysteps = yaml.safe_load(activitysteps_as_str)
+                for activitystep in activitysteps:
+                    self.validate(
+                        activitystep,
+                        target_class="ActivityStep",
                     )
 
     def validate(
