@@ -42,3 +42,7 @@ tasks.register('createSymlinkToBin', Exec) {
 tasks.register("install") {
     dependsOn(createSymlinkToBin)
 }
+
+tasks.register("uninstall", Exec) {
+    commandLine "bash", "-c", "rm -rf $installDir"
+}
