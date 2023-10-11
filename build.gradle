@@ -12,6 +12,7 @@ plugins {
 def homePath = System.properties['user.home']
 def src = "$projectDir"
 def schemaDir = "$projectDir/dof-cubesat"
+def dofhelpersDir = "$projectDir/dof-helpers"
 def schemaBuildDir = "$schemaDir/build"
 def installDir = "$homePath/.cubesat-cli"
 def binDir = "$installDir/bin"
@@ -26,8 +27,13 @@ tasks.register('buildSchema', Exec) {
     commandLine "bash", "-c", "cd $schemaDir && ./gradlew build"
 }
 
+tasks.register('installDofhelpersNodeModules', Exec) {
+    commandLine "bash", "-c", "cd $dofhelpersDir && npm ci"
+}
+
 tasks.register('copyFilesToInstallDir', Copy) {
     dependsOn(buildSchema)
+    dependsOn(installDofhelpersNodeModules)
     from "$src"
     into "$installDir"
 }

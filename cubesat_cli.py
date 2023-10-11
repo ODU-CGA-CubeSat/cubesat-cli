@@ -23,6 +23,13 @@ class CubeSatDB:
         self.dof_cubesat_schema_path = path.join(
             self.dof_cubesat_path, "build/schema/dof-cubesat.yaml"
         )
+        self.dof_helpers_path = path.join(self.fullpath, "dof-helpers")
+        self.dof_helpers_parse_component_path = path.join(
+            self.dof_helpers_path, "parseComponent.js"
+        )
+        self.dof_helpers_generate_assembly_instructions_path = path.join(
+            self.dof_helpers_path, "generateAssemblyInstructions.js"
+        )
 
         with open(self.dof_cubesat_schema_path, "r") as file:
             self.dof_cubesat_schema_as_str = file.read()
@@ -56,11 +63,16 @@ class CubeSatDB:
                 action="store_true",
             )
             self.parsers[class_name].add_argument(
+                "-g",
+                "--generate",
+                help="Generate a {0}".format(class_name),
+                action="store_true",
+            )
+            self.parsers[class_name].add_argument(
                 "-f",
                 "--filename",
                 type=str,
                 nargs=1,
-                required=True,
                 help="Filename of {0}".format(class_name),
             )
 
@@ -101,6 +113,9 @@ class CubeSatDB:
                         activitystep,
                         target_class="ActivityStep",
                     )
+        if args.generate == True:
+            if args.command == "assemblysteps":
+                self.generateAssemblySteps()
 
     def validate(
         self,
@@ -129,6 +144,48 @@ class CubeSatDB:
                 "-C",
                 target_class,
                 self.data_path,
+            ]
+        )
+
+    def generateAssemblySteps(self):
+        run(
+            [
+                "mkdir",
+                "dist/",
+            ]
+        )
+        run(
+            [
+                "node",
+                self.dof_helpers_parse_component_path,
+            ]
+        )
+        run(
+            [
+                "node",
+                self.dof_helpers_generate_assembly_instructions_path,
+            ]
+        )
+        run(["cp", "-r", "src/images", "dist/"])
+        run(["cp", "-r", "source/images", "dist/"])
+        run(
+            [
+                "asciidoctor",
+                "dist/assemblyInstructions.adoc",
+                "-o",
+                "dist/assemblyInstructions.html",
+            ]
+        )
+        run(
+            [
+                "asciidoctor",
+                "dist/assemblyInstructions.adoc",
+                "-o",
+                "dist/assemblyInstructions.pdf",
+                "-r",
+                "asciidoctor-pdf",
+                "-b",
+                "pdf",
             ]
         )
 
