@@ -1,3 +1,6 @@
 [submodule "dof-cubesat"]
 	path = dof-cubesat
 	url = https://github.com/ODU-CGA-CubeSat/dof-cubesat.git
+[submodule "dof-helpers"]
+	path = dof-helpers
+	url = https://github.com/capsulecorplab/dof-helpers.git
